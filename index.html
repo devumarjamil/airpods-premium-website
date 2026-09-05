@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AirPods Pro — Hear Everything. Feel Nothing.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style id="live-fallback-css">
+      /* ========== RESET & BASE ========== */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f5f0eb;
+        color: #1d1d1f;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        cursor: none;
+      }
+      img { max-width: 100%; display: block; }
+      a { text-decoration: none; color: inherit; }
+      button { font-family: inherit; cursor: none; border: none; background: none; }
+      ::selection { background: rgba(196,168,130,0.4); color: #1d1d1f; }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #f5f0eb; }
+      ::-webkit-scrollbar-thumb { background: #c4a882; border-radius: 99px; }
+
+      /* Hide fallback by default; JS shows it if React never mounts */
+      #live-fallback { display: none; }
+      #live-fallback.is-active { display: block; }
+
+      /* ========== CUSTOM CURSOR ========== */
+      .cursor-dot {
+        position: fixed; top: 0; left: 0; width: 10px; height: 10px;
+        background: #1d1d1f; border-radius: 50%; pointer-events: none;
+        z-index: 9999; mix-blend-mode: difference; transform: translate(-50%, -50%);
+        transition: width .2s, height .2s;
+      }
+      .cursor-ring {
+        position: fixed; top: 0; left: 0; width: 36px; height: 36px;
+        border: 1px solid rgba(29,29,31,0.45); border-radius: 50%;
+        pointer-events: none; z-index: 9998; transform: translate(-50%, -50%);
+        transition: width .25s, height .25s, opacity .25s;
+      }
+      .cursor-dot.hover { width: 16px; height: 16px; }
+      .cursor-ring.hover { width: 56px; height: 56px; opacity: 0.5; }
+
+      /* ========== NAV ========== */
+      .nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+        height: 64px; display: flex; align-items: center;
+        transition: background .4s, box-shadow .4s, backdrop-filter .4s;
+      }
+      .nav.scrolled {
+        background: rgba(245,240,235,0.88);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 1px 40px rgba(0,0,0,0.08);
+      }
+      .nav-inner {
+        width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 17px; }
+      .nav-links { display: flex; align-items: center; gap: 32px; }
+      .nav-links a {
+        font-size: 14px; font-weight: 500; color: #6e6e73; position: relative;
+        transition: color .2s;
+      }
+      .nav-links a:hover, .nav-links a.active { color: #1d1d1f; }
+      .nav-links a::after {
+        content: ""; position: absolute; left: 0; bottom: -4px; height: 2px; width: 0;
+        background: #1d1d1f; transition: width .3s;
+      }
+      .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+      .btn-nav {
+        background: #1d1d1f; color: #fff; font-size: 13px; font-weight: 600;
+        padding: 8px 20px; border-radius: 999px; transition: background .2s, transform .2s;
+      }
+      .btn-nav:hover { background: #3d3d3f; transform: scale(1.04); }
+      .hamburger { display: none; flex-direction: column; gap: 5px; padding: 4px; }
+      .hamburger span { display: block; width: 22px; height: 2px; background: #1d1d1f; transition: .3s; }
+      .mobile-menu {
+        display: none; position: fixed; inset: 0; z-index: 999;
+        background: rgba(245,240,235,0.97); backdrop-filter: blur(20px);
+        flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+      }
+      .mobile-menu.open { display: flex; }
+      .mobile-menu a { font-size: 36px; font-weight: 300; color: #1d1d1f; }
+
+      /* ========== HERO ========== */
+      .hero {
+        position: relative; min-height: 100vh; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; overflow: hidden; padding: 96px 24px 48px;
+      }
+      .hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+      .hero-bg .base {
+        position: absolute; inset: 0;
+        background: linear-gradient(135deg, #faf7f2 0%, #f5f0eb 50%, #ede8e3 100%);
+      }
+      .orb {
+        position: absolute; border-radius: 50%; pointer-events: none;
+        animation: drift 10s ease-in-out infinite;
+      }
+      .orb-1 {
+        width: 600px; height: 600px; top: 40px; left: 15%;
+        background: radial-gradient(circle, rgba(220,210,195,0.8) 0%, transparent 70%);
+        opacity: 0.45; animation-duration: 8s;
+      }
+      .orb-2 {
+        width: 500px; height: 500px; bottom: 20px; right: 12%;
+        background: radial-gradient(circle, rgba(200,190,180,0.6) 0%, transparent 70%);
+        opacity: 0.35; animation-duration: 11s; animation-delay: -3s;
+      }
+      .orb-3 {
+        width: 800px; height: 800px; top: 50%; left: 50%; transform: translate(-50%,-50%);
+        background: radial-gradient(circle, rgba(230,215,200,0.9) 0%, transparent 65%);
+        opacity: 0.22; animation: pulseScale 6s ease-in-out infinite;
+      }
+      @keyframes drift {
+        0%,100% { transform: translate(0,0); }
+        50% { transform: translate(30px,-24px); }
+      }
+      @keyframes pulseScale {
+        0%,100% { transform: translate(-50%,-50%) scale(1); }
+        50% { transform: translate(-50%,-50%) scale(1.1); }
+      }
+      .hero-content { position: relative; z-index: 2; text-align: center; width: 100%; max-width: 1100px; }
+      .badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(255,255,255,0.6); backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.8); border-radius: 999px;
+        padding: 6px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+        text-transform: uppercase; margin-bottom: 24px;
+        animation: fadeUp 0.8s ease both;
+      }
+      .badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; animation: blink 1.6s infinite; }
+      @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+      .hero h1 {
+        font-size: clamp(52px, 9vw, 120px); font-weight: 800; line-height: 0.9;
+        letter-spacing: -0.04em; margin-bottom: 16px;
+        animation: fadeUp 1s ease 0.15s both;
+      }
+      .hero h1 span {
+        background: linear-gradient(90deg, #8a8a8a, #1d1d1f);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      }
+      .hero-sub {
+        font-size: clamp(16px, 2vw, 22px); color: #6e6e73; font-weight: 300;
+        line-height: 1.6; margin-bottom: 32px; animation: fadeUp 1s ease 0.3s both;
+      }
+      .hero-ctas { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; animation: fadeUp 1s ease 0.45s both; }
+      .btn-dark {
+        background: #1d1d1f; color: #fff; font-weight: 600; font-size: 15px;
+        padding: 14px 32px; border-radius: 999px; box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+        transition: transform .2s, background .2s;
+      }
+      .btn-dark:hover { background: #3d3d3f; transform: scale(1.05); }
+      .btn-ghost {
+        border: 1px solid rgba(29,29,31,0.2); color: #1d1d1f; font-weight: 600; font-size: 15px;
+        padding: 14px 32px; border-radius: 999px; background: rgba(255,255,255,0.4);
+        backdrop-filter: blur(8px); transition: transform .2s, border-color .2s;
+      }
+      .btn-ghost:hover { transform: scale(1.05); border-color: rgba(29,29,31,0.6); }
+      .hero-img-wrap {
+        position: relative; margin: 24px auto 0; max-width: 640px; width: 100%;
+        animation: fadeUp 1.2s ease 0.4s both;
+      }
+      .hero-glow {
+        position: absolute; inset: 12%; border-radius: 50%;
+        background: radial-gradient(circle, rgba(200,185,165,0.55) 0%, transparent 70%);
+        animation: pulseScale2 4s ease-in-out infinite;
+      }
+      @keyframes pulseScale2 {
+        0%,100% { transform: scale(1); } 50% { transform: scale(1.15); }
+      }
+      .hero-img { position: relative; z-index: 2; width: 100%; max-height: 52vh; object-fit: contain; filter: drop-shadow(0 40px 80px rgba(0,0,0,0.15)); }
+      .float-tag {
+        position: absolute; background: rgba(255,255,255,0.72); backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.85); border-radius: 16px; padding: 10px 14px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08); z-index: 3;
+      }
+      .float-tag .k { font-size: 10px; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; }
+      .float-tag .v { font-size: 13px; font-weight: 700; line-height: 1.25; }
+      .tag-l { left: 0; top: 32%; animation: floatY 3.5s ease-in-out infinite; }
+      .tag-r { right: 0; top: 48%; animation: floatY 4s ease-in-out infinite reverse; }
+      @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+      .stats {
+        display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin-top: 28px;
+        animation: fadeUp 1s ease 0.7s both; position: relative; z-index: 2;
+      }
+      .stat .n { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; }
+      .stat .l { font-size: 13px; color: #6e6e73; font-weight: 500; margin-top: 4px; }
+      .scroll-ind {
+        position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+        display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2;
+        animation: fadeUp 1s ease 1.4s both;
+      }
+      .scroll-ind span { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #6e6e73; font-weight: 600; }
+      .scroll-mouse {
+        width: 20px; height: 32px; border: 2px solid rgba(29,29,31,0.2); border-radius: 12px;
+        display: flex; justify-content: center; padding-top: 6px;
+      }
+      .scroll-mouse i {
+        width: 4px; height: 6px; background: rgba(29,29,31,0.4); border-radius: 99px;
+        animation: scrollDot 1.5s ease-in-out infinite;
+      }
+      @keyframes scrollDot { 0%,100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(8px); opacity: 0.3; } }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(36px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ========== REVEAL ON SCROLL ========== */
+      .reveal { opacity: 0; transform: translateY(50px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+      .reveal.in { opacity: 1; transform: translateY(0); }
+      .reveal-d1 { transition-delay: .08s; }
+      .reveal-d2 { transition-delay: .16s; }
+      .reveal-d3 { transition-delay: .24s; }
+      .reveal-d4 { transition-delay: .32s; }
+      .reveal-d5 { transition-delay: .4s; }
+
+      /* ========== FEATURES ========== */
+      .features { position: relative; padding: 120px 24px; overflow: hidden; }
+      .features-bg {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, #f5f0eb 0%, #ede8e3 50%, #f5f0eb 100%);
+      }
+      .grid-overlay {
+        position: absolute; inset: 0; opacity: 0.03;
+        background-image: linear-gradient(#1d1d1f 1px, transparent 1px), linear-gradient(90deg, #1d1d1f 1px, transparent 1px);
+        background-size: 60px 60px;
+      }
+      .wrap { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; }
+      .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: #8a7a6a; margin-bottom: 14px; }
+      .sec-title {
+        font-size: clamp(36px, 6vw, 80px); font-weight: 800; letter-spacing: -0.04em;
+        line-height: 1.05; margin-bottom: 16px;
+      }
+      .sec-title span {
+        background: linear-gradient(90deg, #6e6e73, #1d1d1f);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      }
+      .sec-sub { font-size: 18px; color: #6e6e73; font-weight: 300; max-width: 520px; }
+      .center { text-align: center; }
+      .center .sec-sub { margin: 0 auto; }
+      .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 64px; }
+      .card {
+        position: relative; border-radius: 24px; padding: 32px; overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.6);
+        background: linear-gradient(135deg, #e8e0d8, #f5f0eb);
+        box-shadow: 0 4px 30px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8);
+        transition: transform .35s cubic-bezier(0.16,1,0.3,1);
+      }
+      .card:hover { transform: translateY(-8px) scale(1.02); }
+      .card::after {
+        content: ""; position: absolute; top: 0; right: 0; width: 128px; height: 128px;
+        border-radius: 50%; background: rgba(255,255,255,0.3); transform: translate(40%, -40%);
+      }
+      .card-icon { font-size: 36px; display: block; margin-bottom: 14px; }
+      .card-k { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #8a7a6a; margin-bottom: 8px; }
+      .card h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; line-height: 1.25; }
+      .card p { font-size: 14px; color: #6e6e73; line-height: 1.65; }
+      .quote-bar {
+        margin-top: 72px; border-radius: 28px; background: #1d1d1f; padding: 56px 40px; text-align: center;
+        position: relative; overflow: hidden;
+      }
+      .quote-bar::before {
+        content: ""; position: absolute; inset: 0; opacity: 0.25;
+        background: radial-gradient(circle at 30% 50%, rgba(255,220,180,0.45) 0%, transparent 60%),
+                    radial-gradient(circle at 70% 50%, rgba(180,200,255,0.3) 0%, transparent 60%);
+      }
+      .quote-bar p { position: relative; font-size: clamp(22px, 3.5vw, 42px); font-weight: 800; color: #fff; letter-spacing: -0.03em; line-height: 1.15; }
+      .quote-bar span { position: relative; display: block; color: #8a8a8a; margin-top: 14px; font-size: 15px; }
+
+      /* ========== SOUND ========== */
+      .sound { position: relative; padding: 120px 24px; overflow: hidden; background: linear-gradient(135deg, #2a2520, #1e1a16 50%, #2e2822); }
+      .sound .orb-a {
+        position: absolute; top: 0; left: 0; width: 600px; height: 600px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(180,150,100,0.5) 0%, transparent 70%);
+        opacity: 0.2; animation: drift 12s ease-in-out infinite;
+      }
+      .sound .orb-b {
+        position: absolute; bottom: 0; right: 0; width: 500px; height: 500px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(140,120,90,0.6) 0%, transparent 70%);
+        opacity: 0.15; animation: drift 10s ease-in-out infinite reverse;
+      }
+      .sound-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+      .sound-photo { position: relative; border-radius: 32px; overflow: hidden; }
+      .sound-photo img { width: 100%; height: 520px; object-fit: cover; display: block; }
+      .sound-photo::after {
+        content: ""; position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(30,26,22,0.8), transparent 50%);
+      }
+      .player {
+        position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 3;
+        background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 16px;
+      }
+      .player-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+      .player-top .t { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.1em; }
+      .player-top .n { color: #fff; font-weight: 600; font-size: 14px; margin-top: 2px; }
+      .play-btn {
+        width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2);
+        color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px;
+      }
+      .waves { display: flex; align-items: flex-end; gap: 3px; height: 48px; }
+      .waves span {
+        width: 3px; border-radius: 99px; background: linear-gradient(to top, #8a7a6a, #d4c4b0);
+        transform-origin: bottom; animation: wave 0.9s ease-in-out infinite;
+      }
+      .waves.paused span { animation-play-state: paused; opacity: 0.3; height: 20% !important; }
+      @keyframes wave {
+        0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); }
+      }
+      .sound-copy h2 {
+        font-size: clamp(36px, 5vw, 72px); font-weight: 800; color: #fff;
+        letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 20px;
+      }
+      .sound-copy h2 span {
+        background: linear-gradient(90deg, #c4a882, #e8d5b8);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      }
+      .sound-copy > p { color: #9a8a7a; font-size: 17px; font-weight: 300; line-height: 1.7; margin-bottom: 28px; }
+      .bar-row { margin-bottom: 14px; }
+      .bar-lab { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+      .bar-lab span:first-child { color: #7a6a5a; font-weight: 500; }
+      .bar-lab span:last-child { color: #fff; font-weight: 700; }
+      .bar-track { height: 6px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; }
+      .bar-fill { height: 100%; border-radius: 99px; width: 0; transition: width 1.2s ease 0.4s; }
+      .modes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 28px; }
+      .mode {
+        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 16px; padding: 16px; text-align: center; color: #9a8a7a; font-size: 12px; font-weight: 500;
+        transition: background .2s, transform .2s;
+      }
+      .mode:hover { background: rgba(255,255,255,0.12); transform: scale(1.05); }
+      .mode .ic { font-size: 22px; display: block; margin-bottom: 8px; }
+
+      /* ========== DESIGN ========== */
+      .design { position: relative; padding: 120px 24px; overflow: hidden;
+        background: linear-gradient(180deg, #f5f0eb, #ede8e3 50%, #e8e2db);
+      }
+      .design-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; margin-top: 64px; }
+      .showcase {
+        border-radius: 40px; overflow: hidden; position: relative;
+        background: linear-gradient(135deg, #faf7f2, #ede8e3);
+        border: 1px solid rgba(255,255,255,0.8);
+        box-shadow: 0 20px 80px rgba(0,0,0,0.08);
+        padding: 24px;
+      }
+      .showcase img { width: 100%; max-height: 360px; object-fit: contain; margin: 0 auto; }
+      .mini-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+      .mini {
+        height: 200px; border-radius: 24px; overflow: hidden; position: relative;
+        background: linear-gradient(135deg, #faf7f2, #ede8e3);
+        border: 1px solid rgba(255,255,255,0.8);
+      }
+      .mini img { width: 100%; height: 100%; object-fit: contain; padding: 12px; }
+      .mini-cap {
+        position: absolute; bottom: 10px; left: 10px; right: 10px;
+        background: rgba(255,255,255,0.6); backdrop-filter: blur(8px);
+        border-radius: 12px; padding: 6px 10px; font-size: 10px; color: #6e6e73; font-weight: 500;
+      }
+      .spec-list { display: flex; flex-direction: column; gap: 6px; margin-top: 20px; }
+      .spec {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 14px 20px; border-radius: 16px; cursor: pointer;
+        background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.8);
+        transition: background .25s, color .25s, box-shadow .25s;
+      }
+      .spec:hover, .spec.on { background: #1d1d1f; color: #fff; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+      .spec .sl { font-size: 13px; font-weight: 500; color: #6e6e73; }
+      .spec .sv { font-size: 13px; font-weight: 700; }
+      .spec:hover .sl, .spec.on .sl { color: rgba(255,255,255,0.7); }
+      .colors-box {
+        margin-top: 20px; background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.8);
+        border-radius: 24px; padding: 22px;
+      }
+      .colors-box p { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+      .swatches { display: flex; gap: 16px; }
+      .swatch { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+      .swatch i {
+        width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(29,29,31,0.15);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: block; transition: transform .2s;
+      }
+      .swatch:hover i { transform: scale(1.12); }
+      .swatch span { font-size: 11px; color: #6e6e73; font-weight: 500; }
+
+      /* ========== BUY ========== */
+      .buy { position: relative; padding: 120px 24px 64px; overflow: hidden;
+        background: linear-gradient(180deg, #e8e2db, #f0ebe5 40%, #faf7f2);
+      }
+      .plans { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 64px; }
+      .plan {
+        border-radius: 28px; padding: 36px 28px; position: relative; overflow: hidden;
+        background: linear-gradient(135deg, #faf7f2, #ede8e3);
+        border: 1px solid rgba(255,255,255,0.8);
+        box-shadow: 0 6px 30px rgba(0,0,0,0.05);
+        transition: transform .35s;
+      }
+      .plan:hover { transform: translateY(-8px) scale(1.02); }
+      .plan.pop {
+        background: linear-gradient(135deg, #1d1d1f, #2e2822);
+        border-color: rgba(196,168,130,0.4);
+        box-shadow: 0 20px 80px rgba(0,0,0,0.18);
+        color: #fff;
+      }
+      .plan.pop:hover { transform: translateY(-12px) scale(1.02); }
+      .pop-badge {
+        position: absolute; top: 16px; right: 16px; background: #c4a882; color: #1d1d1f;
+        font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+        padding: 4px 10px; border-radius: 999px;
+      }
+      .plan-sub { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #8a7a6a; margin-bottom: 4px; }
+      .plan.pop .plan-sub { color: #c4a882; }
+      .plan h3 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+      .plan .price { font-size: 48px; font-weight: 800; letter-spacing: -0.04em; }
+      .plan .note { font-size: 13px; color: #6e6e73; margin: 4px 0 28px; }
+      .plan.pop .note { color: rgba(255,255,255,0.5); }
+      .plan ul { list-style: none; margin-bottom: 28px; }
+      .plan li { display: flex; align-items: center; gap: 10px; font-size: 14px; margin-bottom: 10px; color: #3d3d3f; }
+      .plan.pop li { color: rgba(255,255,255,0.8); }
+      .plan li .ck {
+        width: 16px; height: 16px; border-radius: 50%; background: rgba(29,29,31,0.08);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px;
+      }
+      .plan.pop li .ck { background: rgba(196,168,130,0.2); color: #c4a882; }
+      .plan-cta {
+        width: 100%; padding: 14px; border-radius: 16px; font-weight: 700; font-size: 14px;
+        background: #1d1d1f; color: #fff; transition: transform .2s, background .2s;
+      }
+      .plan-cta:hover { transform: scale(1.03); background: #3d3d3f; }
+      .plan.pop .plan-cta { background: #c4a882; color: #1d1d1f; }
+      .plan.pop .plan-cta:hover { background: #d4b892; }
+
+      .banner {
+        margin-top: 80px; border-radius: 40px; overflow: hidden; position: relative; height: 400px;
+        background: linear-gradient(135deg, #2a2520, #1e1a16);
+      }
+      .banner::before {
+        content: ""; position: absolute; inset: 0; opacity: 0.4;
+        background: radial-gradient(ellipse at 30% 50%, rgba(196,168,130,0.4) 0%, transparent 60%),
+                    radial-gradient(ellipse at 70% 50%, rgba(100,120,160,0.3) 0%, transparent 60%);
+      }
+      .banner img {
+        position: absolute; right: 0; bottom: 0; height: 100%; max-width: 55%; object-fit: contain;
+        animation: floatY 5s ease-in-out infinite;
+      }
+      .banner-copy { position: relative; z-index: 2; padding: 64px 48px; max-width: 520px; }
+      .banner-copy .eyebrow { color: #c4a882; }
+      .banner-copy h3 { font-size: clamp(28px, 4vw, 48px); font-weight: 800; color: #fff; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 12px; }
+      .banner-copy p { color: #9a8a7a; margin-bottom: 24px; }
+      .btn-white {
+        background: #fff; color: #1d1d1f; font-weight: 700; font-size: 14px;
+        padding: 12px 28px; border-radius: 999px; transition: transform .2s, background .2s;
+      }
+      .btn-white:hover { transform: scale(1.05); background: #f0ede8; }
+
+      .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; margin-top: 80px; }
+      .faq-item { border-bottom: 1px solid rgba(29,29,31,0.1); }
+      .faq-q {
+        width: 100%; display: flex; justify-content: space-between; align-items: center;
+        padding: 20px 0; text-align: left; font-size: 16px; font-weight: 700; gap: 16px;
+      }
+      .faq-q .plus { font-size: 24px; color: #6e6e73; transition: transform .3s; flex-shrink: 0; }
+      .faq-q.open .plus { transform: rotate(45deg); }
+      .faq-a { max-height: 0; overflow: hidden; transition: max-height .4s ease, padding .4s; }
+      .faq-a.open { max-height: 200px; }
+      .faq-a p { color: #6e6e73; font-size: 14px; line-height: 1.7; padding-bottom: 20px; }
+
+      .footer {
+        margin-top: 80px; padding-top: 28px; border-top: 1px solid rgba(29,29,31,0.1);
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+      }
+      .footer-l { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+      .footer-l strong { font-weight: 700; }
+      .footer-l span { color: #6e6e73; }
+      .footer-r { display: flex; gap: 24px; }
+      .footer-r a { font-size: 12px; color: #6e6e73; transition: color .2s; }
+      .footer-r a:hover { color: #1d1d1f; }
+
+      /* ========== RESPONSIVE ========== */
+      @media (max-width: 960px) {
+        .nav-links { display: none; }
+        .hamburger { display: flex; }
+        .cards, .plans { grid-template-columns: 1fr; }
+        .sound-grid, .design-grid, .faq-grid { grid-template-columns: 1fr; gap: 40px; }
+        .tag-l, .tag-r { display: none; }
+        .banner { height: auto; }
+        .banner img { position: relative; max-width: 80%; height: 220px; margin: 0 auto; display: block; }
+        .banner-copy { padding: 40px 24px 0; }
+      }
+      @media (max-width: 640px) {
+        .stats { gap: 24px; }
+        .stat .n { font-size: 26px; }
+        .hero { padding-top: 80px; }
+        .features, .sound, .design, .buy { padding: 80px 18px; }
+        .mini-row { grid-template-columns: 1fr; }
+        .footer { flex-direction: column; text-align: center; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- LIVE SERVER FALLBACK: full standalone site (shown only if React does not mount) -->
+    <div id="live-fallback">
+      <div class="cursor-dot" id="cDot"></div>
+      <div class="cursor-ring" id="cRing"></div>
+
+      <nav class="nav" id="nav">
+        <div class="nav-inner">
+          <a href="#home" class="logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#1d1d1f"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            AirPods Pro
+          </a>
+          <div class="nav-links">
+            <a href="#home" class="active">Home</a>
+            <a href="#features">Features</a>
+            <a href="#sound">Sound</a>
+            <a href="#design">Design</a>
+            <a href="#buy">Buy</a>
+            <a href="#buy" class="btn-nav">Buy Now</a>
+          </div>
+          <button class="hamburger" id="ham" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </nav>
+      <div class="mobile-menu" id="mm">
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#sound">Sound</a>
+        <a href="#design">Design</a>
+        <a href="#buy">Buy</a>
+      </div>
+
+      <!-- PAGE 1 HERO -->
+      <section class="hero" id="home">
+        <div class="hero-bg">
+          <div class="base"></div>
+          <div class="orb orb-1"></div>
+          <div class="orb orb-2"></div>
+          <div class="orb orb-3"></div>
+        </div>
+        <div class="hero-content">
+          <div class="badge"><i class="badge-dot"></i> New Generation — 2nd Gen</div>
+          <h1>AirPods<br><span>Pro.</span></h1>
+          <p class="hero-sub">Rebuilt from the inside out.<br>Hear everything. Feel nothing.</p>
+          <div class="hero-ctas">
+            <a href="#buy" class="btn-dark">Buy — from $249</a>
+            <a href="#features" class="btn-ghost">Explore</a>
+          </div>
+          <div class="hero-img-wrap">
+            <div class="hero-glow"></div>
+            <img class="hero-img" data-img="airpods-hero.png" alt="AirPods Pro">
+            <div class="float-tag tag-l">
+              <div class="k">ANC</div>
+              <div class="v">Active Noise<br>Cancellation</div>
+            </div>
+            <div class="float-tag tag-r">
+              <div class="k">H2 Chip</div>
+              <div class="v">Ultra-low<br>Distortion</div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="n">2×</div><div class="l">More ANC Power</div></div>
+            <div class="stat"><div class="n">6hr</div><div class="l">Battery Life</div></div>
+            <div class="stat"><div class="n">30hr</div><div class="l">With Case</div></div>
+            <div class="stat"><div class="n">H2</div><div class="l">Apple Chip</div></div>
+          </div>
+        </div>
+        <div class="scroll-ind"><span>Scroll</span><div class="scroll-mouse"><i></i></div></div>
+      </section>
+
+      <!-- PAGE 2 FEATURES -->
+      <section class="features" id="features">
+        <div class="features-bg"></div>
+        <div class="grid-overlay"></div>
+        <div class="wrap">
+          <div class="center reveal">
+            <div class="eyebrow">What's Inside</div>
+            <h2 class="sec-title">Engineered to<br><span>amaze you.</span></h2>
+            <p class="sec-sub">Six groundbreaking technologies packed into one tiny device that's smaller than ever.</p>
+          </div>
+          <div class="cards">
+            <div class="card reveal reveal-d1">
+              <span class="card-icon">🔇</span>
+              <div class="card-k">2× More Powerful</div>
+              <h3>Active Noise Cancellation</h3>
+              <p>The H2 chip processes sound at incredible speed, reducing even more unwanted noise so you can focus on what matters most.</p>
+            </div>
+            <div class="card reveal reveal-d2">
+              <span class="card-icon">🎵</span>
+              <div class="card-k">Seamlessly Blends</div>
+              <h3>Adaptive Audio</h3>
+              <p>A new listening mode that seamlessly combines Active Noise Cancellation and Transparency mode, adapting to your environment.</p>
+            </div>
+            <div class="card reveal reveal-d3">
+              <span class="card-icon">👂</span>
+              <div class="card-k">Dynamic Head Tracking</div>
+              <h3>Personalized Spatial Audio</h3>
+              <p>Featuring dynamic head tracking that places sound all around you. Now scans your unique ear anatomy for a custom spatial profile.</p>
+            </div>
+            <div class="card reveal reveal-d1">
+              <span class="card-icon">⚡</span>
+              <div class="card-k">Ultra-Low Distortion</div>
+              <h3>H2 Apple Chip</h3>
+              <p>The custom Apple H2 chip pushes the limits of what's possible in wireless audio with a powerful Digital Audio Engine.</p>
+            </div>
+            <div class="card reveal reveal-d2">
+              <span class="card-icon">💧</span>
+              <div class="card-k">Dust & Water Resistant</div>
+              <h3>IP54 Rated</h3>
+              <p>Both the AirPods and case are rated IP54 for dust and water resistance, protecting you through workouts and rainy days.</p>
+            </div>
+            <div class="card reveal reveal-d3">
+              <span class="card-icon">🔋</span>
+              <div class="card-k">Up to 30 Hours</div>
+              <h3>All‑Day Battery</h3>
+              <p>Get up to 6 hours of listening time, and up to 30 hours combined with the MagSafe Charging Case.</p>
+            </div>
+          </div>
+          <div class="quote-bar reveal">
+            <p>"The most powerful<br>AirPods we've ever built."</p>
+            <span>— Apple, Sept 2022</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3 SOUND -->
+      <section class="sound" id="sound">
+        <div class="orb-a"></div>
+        <div class="orb-b"></div>
+        <div class="wrap sound-grid">
+          <div class="sound-photo reveal">
+            <img data-img="airpods-noise.png" alt="Noise Cancellation">
+            <div class="player">
+              <div class="player-top">
+                <div>
+                  <div class="t">Now Listening</div>
+                  <div class="n">Adaptive Audio — ON</div>
+                </div>
+                <button class="play-btn" id="playBtn">❚❚</button>
+              </div>
+              <div class="waves" id="waves"></div>
+            </div>
+          </div>
+          <div class="sound-copy">
+            <div class="eyebrow reveal" style="color:#c4a882">Sound Experience</div>
+            <h2 class="reveal reveal-d1">Silence the<br><span>world.</span></h2>
+            <p class="reveal reveal-d2">The H2 chip analyses ambient sound 48,000 times per second, continuously adapting to block out the most disruptive low- and mid-frequency sounds like airplane engines and traffic noise.</p>
+            <div class="reveal reveal-d3">
+              <div class="bar-row">
+                <div class="bar-lab"><span>Noise Reduction</span><span>98%</span></div>
+                <div class="bar-track"><div class="bar-fill" data-w="98%" style="background:linear-gradient(90deg,#c4a88288,#c4a882)"></div></div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-lab"><span>Audio Quality</span><span>95%</span></div>
+                <div class="bar-track"><div class="bar-fill" data-w="95%" style="background:linear-gradient(90deg,#a0b8d088,#a0b8d0)"></div></div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-lab"><span>Transparency</span><span>92%</span></div>
+                <div class="bar-track"><div class="bar-fill" data-w="92%" style="background:linear-gradient(90deg,#b8c8a088,#b8c8a0)"></div></div>
+              </div>
+            </div>
+            <div class="modes reveal">
+              <div class="mode"><span class="ic">🎧</span>ANC Mode</div>
+              <div class="mode"><span class="ic">👁️</span>Transparency</div>
+              <div class="mode"><span class="ic">🔄</span>Adaptive</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 4 DESIGN -->
+      <section class="design" id="design">
+        <div class="wrap">
+          <div class="center reveal">
+            <div class="eyebrow">Precision Design</div>
+            <h2 class="sec-title">Crafted to<br><span>perfection.</span></h2>
+          </div>
+          <div class="design-grid">
+            <div>
+              <div class="showcase reveal">
+                <img data-img="airpods-case.png" alt="AirPods Case">
+              </div>
+              <div class="mini-row">
+                <div class="mini reveal reveal-d1">
+                  <img data-img="airpods-side.png" alt="Side view">
+                  <div class="mini-cap">Side View — Stem Design</div>
+                </div>
+                <div class="mini reveal reveal-d2">
+                  <img data-img="airpods-detail.png" alt="Macro detail">
+                  <div class="mini-cap">Macro — Speaker Mesh</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 class="reveal" style="font-size:28px;font-weight:800;letter-spacing:-0.03em;margin-bottom:10px">Full Tech Specs</h3>
+              <p class="reveal" style="color:#6e6e73;margin-bottom:8px">Every millimetre of the AirPods Pro has been engineered for audio perfection. Tap any spec to learn more.</p>
+              <div class="spec-list" id="specs">
+                <div class="spec"><span class="sl">Chip</span><span class="sv">Apple H2</span></div>
+                <div class="spec"><span class="sl">ANC</span><span class="sv">Up to 2× more</span></div>
+                <div class="spec"><span class="sl">Transparency</span><span class="sv">Adaptive Audio</span></div>
+                <div class="spec"><span class="sl">Spatial Audio</span><span class="sv">Personalized</span></div>
+                <div class="spec"><span class="sl">Battery</span><span class="sv">6 hrs ANC on</span></div>
+                <div class="spec"><span class="sl">Case Battery</span><span class="sv">30 hrs total</span></div>
+                <div class="spec"><span class="sl">Water Resist.</span><span class="sv">IPX4 / IP54</span></div>
+                <div class="spec"><span class="sl">Connectivity</span><span class="sv">Bluetooth 5.3</span></div>
+                <div class="spec"><span class="sl">Controls</span><span class="sv">Force Sensor</span></div>
+                <div class="spec"><span class="sl">Charging</span><span class="sv">MagSafe / Lightning</span></div>
+              </div>
+              <div class="colors-box reveal">
+                <p>Available In</p>
+                <div class="swatches">
+                  <div class="swatch"><i style="background:#f0ede8"></i><span>White</span></div>
+                  <div class="swatch"><i style="background:#2a2420"></i><span>Midnight</span></div>
+                  <div class="swatch"><i style="background:#e8e2d8"></i><span>Starlight</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 5 BUY -->
+      <section class="buy" id="buy">
+        <div class="wrap">
+          <div class="center reveal">
+            <div class="eyebrow">Purchase</div>
+            <h2 class="sec-title">Find the right<br><span>AirPods Pro.</span></h2>
+          </div>
+          <div class="plans">
+            <div class="plan reveal reveal-d1">
+              <div class="plan-sub">2nd Generation</div>
+              <h3>AirPods Pro</h3>
+              <div class="price">$249</div>
+              <div class="note">Free Engraving</div>
+              <ul>
+                <li><span class="ck">✓</span>Active Noise Cancellation</li>
+                <li><span class="ck">✓</span>Adaptive Audio</li>
+                <li><span class="ck">✓</span>Personalised Spatial Audio</li>
+                <li><span class="ck">✓</span>MagSafe Charging Case</li>
+                <li><span class="ck">✓</span>IPX4 Water Resistant</li>
+                <li><span class="ck">✓</span>H2 Chip</li>
+                <li><span class="ck">✓</span>6 hrs Battery</li>
+              </ul>
+              <button class="plan-cta">Add to Bag</button>
+            </div>
+            <div class="plan pop reveal reveal-d2">
+              <div class="pop-badge">Best Value</div>
+              <div class="plan-sub">USB-C Bundle</div>
+              <h3>AirPods Pro</h3>
+              <div class="price">$249</div>
+              <div class="note">USB-C Charging</div>
+              <ul>
+                <li><span class="ck">✓</span>Everything in Standard</li>
+                <li><span class="ck">✓</span>USB-C MagSafe Case</li>
+                <li><span class="ck">✓</span>Precision Finding</li>
+                <li><span class="ck">✓</span>Apple Watch Fast-Pair</li>
+                <li><span class="ck">✓</span>Find My Support</li>
+                <li><span class="ck">✓</span>AAC-ELD Audio Codec</li>
+                <li><span class="ck">✓</span>Lossless Audio Ready</li>
+              </ul>
+              <button class="plan-cta">Most Popular</button>
+            </div>
+            <div class="plan reveal reveal-d3">
+              <div class="plan-sub">Protection Plan</div>
+              <h3>AppleCare+</h3>
+              <div class="price">$29</div>
+              <div class="note">/ month</div>
+              <ul>
+                <li><span class="ck">✓</span>Accidental Damage Cover</li>
+                <li><span class="ck">✓</span>Battery Service</li>
+                <li><span class="ck">✓</span>24/7 Priority Support</li>
+                <li><span class="ck">✓</span>Express Replacement</li>
+                <li><span class="ck">✓</span>Theft Protection</li>
+                <li><span class="ck">✓</span>Global Coverage</li>
+                <li><span class="ck">✓</span>No Hidden Fees</li>
+              </ul>
+              <button class="plan-cta">Add Protection</button>
+            </div>
+          </div>
+
+          <div class="banner reveal">
+            <img data-img="airpods-hero.png" alt="AirPods Pro">
+            <div class="banner-copy">
+              <div class="eyebrow">Free Delivery</div>
+              <h3>Order today.<br>Delivered tomorrow.</h3>
+              <p>Free express shipping on all orders. Easy 14-day returns.</p>
+              <a href="#buy" class="btn-white">Shop Now →</a>
+            </div>
+          </div>
+
+          <div class="faq-grid">
+            <div class="reveal">
+              <div class="eyebrow">FAQ</div>
+              <h2 class="sec-title" style="font-size:clamp(28px,4vw,42px)">Your questions,<br>answered.</h2>
+              <p class="sec-sub">Everything you need to know about AirPods Pro.</p>
+            </div>
+            <div>
+              <div class="faq-item">
+                <button class="faq-q">What is Adaptive Audio?<span class="plus">+</span></button>
+                <div class="faq-a"><p>Adaptive Audio is a new listening mode that seamlessly combines Active Noise Cancellation and Transparency mode, dynamically adjusting the mix of noise cancellation and awareness to suit your environment.</p></div>
+              </div>
+              <div class="faq-item">
+                <button class="faq-q">How long does battery last?<span class="plus">+</span></button>
+                <div class="faq-a"><p>AirPods Pro delivers up to 6 hours of listening time (ANC on), and up to 30 hours total with the MagSafe Charging Case.</p></div>
+              </div>
+              <div class="faq-item">
+                <button class="faq-q">Is it compatible with Android?<span class="plus">+</span></button>
+                <div class="faq-a"><p>AirPods Pro work with any Bluetooth-enabled device. However, many advanced features like Spatial Audio, Adaptive EQ and seamless switching require Apple devices.</p></div>
+              </div>
+              <div class="faq-item">
+                <button class="faq-q">What charging options are available?<span class="plus">+</span></button>
+                <div class="faq-a"><p>The MagSafe Charging Case supports MagSafe, Qi wireless, Apple Watch charger, and Lightning or USB-C (depending on model).</p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer">
+            <div class="footer-l">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#1d1d1f"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              <strong>AirPods Pro</strong>
+              <span>© 2024 Apple Inc.</span>
+            </div>
+            <div class="footer-r">
+              <a href="#">Privacy Policy</a>
+              <a href="#">Terms of Use</a>
+              <a href="#">Sales Policy</a>
+              <a href="#">Legal</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      (function () {
+        /* Show standalone site if React never mounts (Live Server / file open) */
+        function activateFallback() {
+          var root = document.getElementById("root");
+          var fb = document.getElementById("live-fallback");
+          if (!fb) return;
+          if (root && root.hasChildNodes()) return;
+          fb.classList.add("is-active");
+          document.body.classList.add("live-mode");
+          boot();
+        }
+        var isLiveServer = location.port === "5500" || location.port === "5501" || location.port === "5502" || location.protocol === "file:";
+        if (isLiveServer) {
+          activateFallback();
+        } else {
+          setTimeout(activateFallback, 2000);
+        }
+
+        var booted = false;
+        function boot() {
+          if (booted) return;
+          booted = true;
+
+          /* Image paths that work in Live Server AND Vite dist */
+          var bases = ["public/images/", "images/", "/images/", "./public/images/", "./images/"];
+          document.querySelectorAll("[data-img]").forEach(function (el) {
+            var name = el.getAttribute("data-img");
+            var i = 0;
+            function tryNext() {
+              if (i >= bases.length) return;
+              el.src = bases[i] + name;
+              i++;
+            }
+            el.addEventListener("error", tryNext);
+            tryNext();
+          });
+
+          /* Custom cursor */
+          var dot = document.getElementById("cDot");
+          var ring = document.getElementById("cRing");
+          var mx = 0, my = 0, rx = 0, ry = 0;
+          document.addEventListener("mousemove", function (e) {
+            mx = e.clientX; my = e.clientY;
+            if (dot) { dot.style.left = mx + "px"; dot.style.top = my + "px"; }
+          });
+          (function loop() {
+            rx += (mx - rx) * 0.15;
+            ry += (my - ry) * 0.15;
+            if (ring) { ring.style.left = rx + "px"; ring.style.top = ry + "px"; }
+            requestAnimationFrame(loop);
+          })();
+          document.querySelectorAll("a, button").forEach(function (el) {
+            el.addEventListener("mouseenter", function () {
+              if (dot) dot.classList.add("hover");
+              if (ring) ring.classList.add("hover");
+            });
+            el.addEventListener("mouseleave", function () {
+              if (dot) dot.classList.remove("hover");
+              if (ring) ring.classList.remove("hover");
+            });
+          });
+
+          /* Nav scroll */
+          var nav = document.getElementById("nav");
+          window.addEventListener("scroll", function () {
+            if (!nav) return;
+            if (window.scrollY > 60) nav.classList.add("scrolled");
+            else nav.classList.remove("scrolled");
+          });
+
+          /* Mobile menu */
+          var ham = document.getElementById("ham");
+          var mm = document.getElementById("mm");
+          if (ham && mm) {
+            ham.addEventListener("click", function () { mm.classList.toggle("open"); });
+            mm.querySelectorAll("a").forEach(function (a) {
+              a.addEventListener("click", function () { mm.classList.remove("open"); });
+            });
+          }
+
+          /* Active nav link */
+          var sections = ["home", "features", "sound", "design", "buy"];
+          window.addEventListener("scroll", function () {
+            var y = window.scrollY + 120;
+            sections.forEach(function (id) {
+              var s = document.getElementById(id);
+              var link = document.querySelector('.nav-links a[href="#' + id + '"]');
+              if (!s || !link) return;
+              if (y >= s.offsetTop && y < s.offsetTop + s.offsetHeight) {
+                document.querySelectorAll(".nav-links a").forEach(function (l) { l.classList.remove("active"); });
+                link.classList.add("active");
+              }
+            });
+          });
+
+          /* Reveal on scroll */
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+              if (e.isIntersecting) {
+                e.target.classList.add("in");
+                e.target.querySelectorAll(".bar-fill").forEach(function (b) {
+                  b.style.width = b.getAttribute("data-w");
+                });
+              }
+            });
+          }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+          document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+
+          /* Wave bars */
+          var waves = document.getElementById("waves");
+          if (waves) {
+            for (var w = 0; w < 32; w++) {
+              var s = document.createElement("span");
+              s.style.height = (20 + Math.random() * 80) + "%";
+              s.style.animationDelay = (w * 0.04) + "s";
+              s.style.animationDuration = (0.7 + (w % 5) * 0.12) + "s";
+              waves.appendChild(s);
+            }
+          }
+          var playing = true;
+          var playBtn = document.getElementById("playBtn");
+          if (playBtn && waves) {
+            playBtn.addEventListener("click", function () {
+              playing = !playing;
+              playBtn.textContent = playing ? "❚❚" : "▶";
+              waves.classList.toggle("paused", !playing);
+            });
+          }
+
+          /* Specs toggle */
+          document.querySelectorAll(".spec").forEach(function (el) {
+            el.addEventListener("click", function () {
+              document.querySelectorAll(".spec").forEach(function (s) { s.classList.remove("on"); });
+              el.classList.add("on");
+            });
+          });
+
+          /* FAQ */
+          document.querySelectorAll(".faq-q").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var open = btn.classList.contains("open");
+              document.querySelectorAll(".faq-q").forEach(function (b) { b.classList.remove("open"); });
+              document.querySelectorAll(".faq-a").forEach(function (a) { a.classList.remove("open"); });
+              if (!open) {
+                btn.classList.add("open");
+                btn.nextElementSibling.classList.add("open");
+              }
+            });
+          });
+
+          /* Parallax hero image */
+          var heroImg = document.querySelector(".hero-img-wrap");
+          window.addEventListener("scroll", function () {
+            if (!heroImg) return;
+            var y = window.scrollY;
+            if (y < window.innerHeight) {
+              heroImg.style.transform = "translateY(" + y * 0.25 + "px) scale(" + (1 + y * 0.00025) + ")";
+              heroImg.style.opacity = String(Math.max(0, 1 - y / 700));
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
