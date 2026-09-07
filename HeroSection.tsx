@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
+const heroImage = new URL("./airpods-hero.png", import.meta.url).href;
+
 interface Props {
   setActiveSection: (n: number) => void;
 }
@@ -156,7 +158,7 @@ export default function HeroSection({ setActiveSection }: Props) {
               />
             </div>
             <img
-              src="/images/airpods-hero.png"
+              src={heroImage}
               alt="AirPods Pro"
               className="w-full h-auto object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.15)] relative z-10"
               style={{ maxHeight: "55vh" }}
