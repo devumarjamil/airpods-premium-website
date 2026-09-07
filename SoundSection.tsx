@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
+const noiseImage = new URL("./airpods-noise.png", import.meta.url).href;
+
 interface Props {
   setActiveSection: (n: number) => void;
 }
@@ -86,7 +88,7 @@ export default function SoundSection({ setActiveSection }: Props) {
                 />
               </div>
               <motion.img
-                src="/images/airpods-noise.png"
+                src={noiseImage}
                 alt="AirPods Noise Cancellation"
                 className="w-full object-cover rounded-[32px] relative z-10"
                 style={{ maxHeight: "580px" }}
