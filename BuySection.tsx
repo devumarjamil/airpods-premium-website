@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
+const heroImage = new URL("./airpods-hero.png", import.meta.url).href;
+
 interface Props {
   setActiveSection: (n: number) => void;
 }
@@ -259,7 +261,7 @@ export default function BuySection({ setActiveSection }: Props) {
             style={{ background: "radial-gradient(ellipse at 30% 50%, rgba(196,168,130,0.4) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(100,120,160,0.3) 0%, transparent 60%)" }}
           />
           <motion.img
-            src="/images/airpods-hero.png"
+            src={heroImage}
             alt="AirPods Pro Premium"
             className="absolute right-0 bottom-0 h-full object-contain opacity-90"
             style={{ maxWidth: "55%" }}
