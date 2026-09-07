@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
+const caseImage = new URL("./airpods-case.png", import.meta.url).href;
+const sideImage = new URL("./airpods-side.png", import.meta.url).href;
+const detailImage = new URL("./airpods-detail.png", import.meta.url).href;
+
 interface Props {
   setActiveSection: (n: number) => void;
 }
@@ -88,7 +92,7 @@ export default function DesignSection({ setActiveSection }: Props) {
                 />
               </div>
               <motion.img
-                src="/images/airpods-case.png"
+                src={caseImage}
                 alt="AirPods Pro Case"
                 className="w-full object-contain relative z-10 p-8"
                 style={{ maxHeight: "380px" }}
@@ -132,7 +136,7 @@ export default function DesignSection({ setActiveSection }: Props) {
                   />
                 </div>
                 <img
-                  src="/images/airpods-side.png"
+                  src={sideImage}
                   alt="AirPods Side"
                   className="w-full h-full object-contain p-4 relative z-10"
                 />
@@ -156,7 +160,7 @@ export default function DesignSection({ setActiveSection }: Props) {
                   />
                 </div>
                 <img
-                  src="/images/airpods-detail.png"
+                  src={detailImage}
                   alt="AirPods Detail"
                   className="w-full h-full object-contain p-4 relative z-10"
                 />
