@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import HeroSection from "./components/HeroSection";
-import FeaturesSection from "./components/FeaturesSection";
-import SoundSection from "./components/SoundSection";
-import DesignSection from "./components/DesignSection";
-import BuySection from "./components/BuySection";
-import Navbar from "./components/Navbar";
-import CustomCursor from "./components/CustomCursor";
+import HeroSection from "./HeroSection";
+import FeaturesSection from "./FeaturesSection";
+import SoundSection from "./SoundSection";
+import DesignSection from "./DesignSection";
+import BuySection from "./BuySection";
+import Navbar from "./Navbar";
+import CustomCursor from "./CustomCursor";
 
 export default function App() {
   const [activeSection, setActiveSection] = useState(0);
